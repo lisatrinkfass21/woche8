@@ -5,25 +5,54 @@
  */
 package net.htlgrieskirchen.pos3.pcp;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Producer /* implement this */ {
+public class Producer implements Runnable {
+
     private final String name;
     private final Storage storage;
     private final int sleepTime;
-    
+
     private final List<Integer> sent;
     private final int numberOfItems;
-    
-    public Producer(String name, Storage storage, int sleepTime, int numberOfItems) {
-       // implement this
-    }
- 
-    // implement this
 
+    public Producer(String name, Storage storage, int sleepTime, int numberOfItems) {
+        this.name = name;
+        this.storage = storage;
+        this.sleepTime = sleepTime;
+        this.numberOfItems = numberOfItems;
+        sent = new ArrayList<>();
+        // implement this
+    }
+
+    // implement this
     public List<Integer> getSent() {
         // implement this
-        return null;
+        return this.sent;
     }
-    
+
+    @Override
+    public void run() {
+        boolean success = false;
+        for (int i = 0; i < this.numberOfItems; i++) {
+            try {
+                while (success == false) {
+                    success = storage.put(i);
+                    if (true == success) {
+                        sent.add(i);
+                    } else {
+                        Thread.sleep(this.sleepTime);
+                    }
+                }
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Producer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+        storage.setProductionComplete();
+    }
+
 }
