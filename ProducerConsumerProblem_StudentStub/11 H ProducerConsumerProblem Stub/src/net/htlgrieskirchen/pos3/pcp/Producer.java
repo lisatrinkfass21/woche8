@@ -37,19 +37,7 @@ public class Producer implements Runnable {
     @Override
     public void run() {
         for (int i = 0; i < this.numberOfItems; i++) {
-            /*while (!sent.contains(i)) {
-                if (storage.put(i)) {
-                    sent.add(i);
-                } else {
-                    try {
-                        Thread.sleep(this.sleepTime);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(Producer.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-
-            }*/
-            boolean success;
+            boolean success = false;
             do {
                 success = storage.put(i);
                 if (success) {
@@ -61,9 +49,7 @@ public class Producer implements Runnable {
                         Logger.getLogger(Producer.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-
-            } while (!sent.contains(i));
-
+            } while (success == false);
         }
         storage.setProductionComplete();
     }
