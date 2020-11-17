@@ -20,7 +20,7 @@ public class Storage {
     public Storage() {
         this.storedCounter = 0;
         this.overflowCounter = 0;
-        this.underflowCounter = 1;
+        this.underflowCounter = 0;
         this.productionComplete = false;
         this.fetchedCounter = 0;
 
@@ -28,25 +28,23 @@ public class Storage {
         // implement this
     }
 
-    public synchronized boolean put(Integer data) throws InterruptedException {
-        if (queue.size() < 10) {
-            queue.put(data);
-            this.storedCounter += 1;
+    public synchronized boolean put(Integer data) {
+        boolean success = queue.offer(data);
+        if (success) {
+            this.storedCounter++;
             return true;
         }
-        this.overflowCounter += 1;
+        this.overflowCounter++;
         return false;
     }
 
     public synchronized Integer get() {
         if (queue.isEmpty()) {
-            this.underflowCounter += 1;
+            this.underflowCounter++;
             return null;
         }
-        Integer tmp = queue.poll();
-        this.fetchedCounter += 1;
-        // implement this
-        return tmp;
+        this.fetchedCounter++;
+        return queue.poll();
     }
 
     public boolean isProductionComplete() {
@@ -54,14 +52,14 @@ public class Storage {
         return this.productionComplete;
     }
 
-    public void setProductionComplete() {
+    public synchronized void setProductionComplete() {
         this.productionComplete = true;
         // implement this
     }
 
     public int getFetchedCounter() {
         // implement this
-        return this.storedCounter;
+        return this.fetchedCounter;
     }
 
     public int getStoredCounter() {
